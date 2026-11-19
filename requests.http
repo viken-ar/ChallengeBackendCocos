@@ -1,0 +1,97 @@
+### ====================================================================
+### Cocos Capital Challenge - API REST Collection
+### ====================================================================
+@baseUrl = http://localhost:8080
+
+### 1. Consultar Portfolio Valorizado (Usuario 1)
+# Retorna: totalAccountValue, availableCash, y lista de posiciones con rendimiento diario y total.
+GET {{baseUrl}}/v1/users/1/portfolio
+Accept: application/json
+
+### 2. Buscar Activo por Ticker (ej: YPFD)
+GET {{baseUrl}}/v1/instruments?query=YPFD
+Accept: application/json
+
+### 3. Buscar Activo por Nombre Parcial (ej: Galicia)
+GET {{baseUrl}}/v1/instruments?query=galicia
+Accept: application/json
+
+### 4. Listar Todos los Instrumentos
+GET {{baseUrl}}/v1/instruments
+Accept: application/json
+
+### 5. Enviar Orden MARKET BUY por Cantidad de Acciones (Idempotente)
+# Compra 10 acciones de PAMP al último precio close de mercado
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Idempotency-Key: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+
+{
+  "userId": 1,
+  "instrumentId": 47,
+  "side": "BUY",
+  "type": "MARKET",
+  "size": 10
+}
+
+### 6. Reenviar Misma Orden con Misma Idempotency-Key (Prueba de Idempotencia)
+# Debe retornar exactamente la respuesta previa sin duplicar la transacción
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Idempotency-Key: a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d
+
+{
+  "userId": 1,
+  "instrumentId": 47,
+  "side": "BUY",
+  "type": "MARKET",
+  "size": 10
+}
+
+### 7. Enviar Orden MARKET BUY por Monto en Pesos
+# Calcula size = floor(amount / price)
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Idempotency-Key: b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e
+
+{
+  "userId": 1,
+  "instrumentId": 47,
+  "side": "BUY",
+  "type": "MARKET",
+  "amount": 25000.00
+}
+
+### 8. Enviar Orden LIMIT BUY con Precio Límite
+# Ingresa con estado NEW
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Idempotency-Key: c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f
+
+{
+  "userId": 1,
+  "instrumentId": 47,
+  "side": "BUY",
+  "type": "LIMIT",
+  "size": 5,
+  "price": 850.00
+}
+
+### 9. Enviar Orden con Fondos Insuficientes (Rechazo)
+# Retorna estado REJECTED persistido
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Idempotency-Key: d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a
+
+{
+  "userId": 1,
+  "instrumentId": 47,
+  "side": "BUY",
+  "type": "MARKET",
+  "size": 10000000
+}
+
+### 10. Cancelar Orden Pendiente (Estado NEW)
+# Cancela la orden y transiciona su estado a CANCELLED
+DELETE {{baseUrl}}/v1/orders/5
+Accept: application/json
