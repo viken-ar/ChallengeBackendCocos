@@ -24,6 +24,11 @@ El proyecto sigue la **Arquitectura Hexagonal (Ports & Adapters)**:
 └── interfaces/      # Controladores REST, mappers, resources y listeners
 ```
 
+## 📑 Decisiones Funcionales y de Diseño
+
+Podés consultar el detalle completo de las decisiones funcionales, modelos de ejecución, manejo de eventos y reglas de negocio en:
+👉 [**Documentación de Decisiones Funcionales**](docs/decisiones-funcionales.md)
+
 ## 🚀 Requisitos
 
 - **JDK 25** (o superior)
