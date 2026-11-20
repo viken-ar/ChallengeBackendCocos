@@ -3,6 +3,7 @@ package ar.com.cocos.challenge.infrastructure.database.adapter;
 import ar.com.cocos.challenge.application.outbound.OrderRepositoryPort;
 import ar.com.cocos.challenge.domain.model.Order;
 import ar.com.cocos.challenge.domain.model.OrderStatus;
+import ar.com.cocos.challenge.domain.model.OrderType;
 import ar.com.cocos.challenge.domain.model.Page;
 import ar.com.cocos.challenge.infrastructure.database.entities.InstrumentEntity;
 import ar.com.cocos.challenge.infrastructure.database.entities.OrderEntity;
@@ -68,6 +69,11 @@ public class OrderRepositoryAdapter implements OrderRepositoryPort {
         return orderInfrastructureMapper.toDomainList(
                 orderJpaRepository.findByUserIdAndInstrument_IdAndStatus(userId, instrumentId, status)
         );
+    }
+
+    @Override
+    public List<Order> findByTypeAndStatus(OrderType type, OrderStatus status) {
+        return orderInfrastructureMapper.toDomainList(orderJpaRepository.findByTypeAndStatus(type, status));
     }
 
     @Override

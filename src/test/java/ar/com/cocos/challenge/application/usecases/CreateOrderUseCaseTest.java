@@ -1,6 +1,7 @@
 package ar.com.cocos.challenge.application.usecases;
 
 import ar.com.cocos.challenge.application.command.CreateOrderCommand;
+import ar.com.cocos.challenge.application.outbound.EventPublisherPort;
 import ar.com.cocos.challenge.application.outbound.IdempotencyRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.OrderRepositoryPort;
 import ar.com.cocos.challenge.application.strategy.OrderExecutionStrategy;
@@ -42,6 +43,9 @@ class CreateOrderUseCaseTest {
     @Mock
     private IdempotencyRepositoryPort idempotencyRepositoryPort;
 
+    @Mock
+    private EventPublisherPort eventPublisherPort;
+
     private ObjectMapper objectMapper;
     private Map<OrderType, OrderExecutionStrategy> strategyByType;
     private CreateOrderUseCaseImpl useCase;
@@ -56,7 +60,8 @@ class CreateOrderUseCaseTest {
                 strategyByType,
                 orderRepositoryPort,
                 idempotencyRepositoryPort,
-                objectMapper
+                objectMapper,
+                eventPublisherPort
         );
     }
 

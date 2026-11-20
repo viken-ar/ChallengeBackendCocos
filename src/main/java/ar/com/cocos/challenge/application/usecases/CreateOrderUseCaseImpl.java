@@ -2,6 +2,7 @@ package ar.com.cocos.challenge.application.usecases;
 
 import ar.com.cocos.challenge.application.command.CreateOrderCommand;
 import ar.com.cocos.challenge.application.inbound.CreateOrderUseCase;
+import ar.com.cocos.challenge.application.outbound.EventPublisherPort;
 import ar.com.cocos.challenge.application.outbound.IdempotencyRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.OrderRepositoryPort;
 import ar.com.cocos.challenge.application.strategy.OrderExecutionStrategy;
@@ -28,17 +29,20 @@ public class CreateOrderUseCaseImpl implements CreateOrderUseCase {
     private final OrderRepositoryPort orderRepositoryPort;
     private final IdempotencyRepositoryPort idempotencyRepositoryPort;
     private final ObjectMapper objectMapper;
+    private final EventPublisherPort eventPublisherPort;
 
     public CreateOrderUseCaseImpl(
             Map<OrderType, OrderExecutionStrategy> strategyByType,
             OrderRepositoryPort orderRepositoryPort,
             IdempotencyRepositoryPort idempotencyRepositoryPort,
-            ObjectMapper objectMapper
+            ObjectMapper objectMapper,
+            EventPublisherPort eventPublisherPort
     ) {
         this.strategyByType = strategyByType;
         this.orderRepositoryPort = orderRepositoryPort;
         this.idempotencyRepositoryPort = idempotencyRepositoryPort;
         this.objectMapper = objectMapper;
+        this.eventPublisherPort = eventPublisherPort;
     }
 
     @Override
@@ -84,6 +88,11 @@ public class CreateOrderUseCaseImpl implements CreateOrderUseCase {
         }
 
         Order savedOrder = orderRepositoryPort.save(result.getData());
+
+        if ((savedOrder.getSide() == OrderSide.BUY || savedOrder.getSide() == OrderSide.SELL)
+                && savedOrder.getStatus() == OrderStatus.FILLED) {
+                eventPublisherPort.publish(savedOrder);
+        }
 
         try {
             responseJson = objectMapper.writeValueAsString(savedOrder);

@@ -2,6 +2,7 @@ package ar.com.cocos.challenge.infrastructure.database.adapter;
 
 import ar.com.cocos.challenge.application.outbound.InstrumentRepositoryPort;
 import ar.com.cocos.challenge.domain.model.Instrument;
+import ar.com.cocos.challenge.domain.model.InstrumentType;
 import ar.com.cocos.challenge.domain.model.Page;
 import ar.com.cocos.challenge.infrastructure.database.entities.InstrumentEntity;
 import ar.com.cocos.challenge.infrastructure.database.mappers.InstrumentInfrastructureMapper;
@@ -37,6 +38,11 @@ public class InstrumentRepositoryAdapter implements InstrumentRepositoryPort {
     @Override
     public Optional<Instrument> findByTicker(String ticker) {
         return instrumentJpaRepository.findByTicker(ticker).map(instrumentInfrastructureMapper::toDomain);
+    }
+
+    @Override
+    public Optional<Instrument> findByType(InstrumentType type) {
+        return instrumentJpaRepository.findByType(type).map(instrumentInfrastructureMapper::toDomain);
     }
 
     @Override

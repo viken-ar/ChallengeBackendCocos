@@ -1,9 +1,6 @@
 package ar.com.cocos.challenge.application.command;
 
-import ar.com.cocos.challenge.domain.model.Order;
-import ar.com.cocos.challenge.domain.model.OrderSide;
-import ar.com.cocos.challenge.domain.model.OrderStatus;
-import ar.com.cocos.challenge.domain.model.OrderType;
+import ar.com.cocos.challenge.domain.model.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -8,10 +8,10 @@ import ar.com.cocos.challenge.domain.model.OrderContext;
 /**
  * Las órdenes LIMIT quedan registradas en estado NEW esperando a ser ejecutadas.
  */
-public class LimitOrderExecutionStrategy extends AbstractOrderExecutionStrategy {
+public class CreateLimitOrderExecutionStrategy extends AbstractOrderExecutionStrategy {
 
-    public LimitOrderExecutionStrategy(OrderRepositoryPort orderRepository,
-                                       MarketDataRepositoryPort marketDataRepositoryPort) {
+    public CreateLimitOrderExecutionStrategy(OrderRepositoryPort orderRepository,
+                                             MarketDataRepositoryPort marketDataRepositoryPort) {
         super(orderRepository, marketDataRepositoryPort);
     }
 

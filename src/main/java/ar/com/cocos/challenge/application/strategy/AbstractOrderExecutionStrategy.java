@@ -8,6 +8,7 @@ import ar.com.cocos.challenge.domain.resolver.OrderExecutionContextResolver;
 import ar.com.cocos.challenge.domain.validator.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Template Method: fija el esqueleto común de ejecución de una orden.
@@ -34,7 +35,7 @@ public abstract class AbstractOrderExecutionStrategy implements OrderExecutionSt
 
         try {
             var filledOrders = orderRepository.findByUserIdAndStatus(order.getUserId(), OrderStatus.FILLED);
-            MarketData lastMarketDate = marketDataRepositoryPort.findLatestByInstrumentId(order.getInstrumentId()).orElseThrow(() -> new BadDataException("No market data found for instrument id: " + order.getInstrumentId()));
+            Optional<MarketData> lastMarketDate = marketDataRepositoryPort.findLatestByInstrumentId(order.getInstrumentId());
             OrderContext context = OrderExecutionContextResolver.resolve(order, filledOrders, lastMarketDate);
             Result<Void> validation = validatorChain.validate(order, context);
 

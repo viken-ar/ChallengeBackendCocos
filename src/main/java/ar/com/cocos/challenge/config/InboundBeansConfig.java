@@ -6,12 +6,14 @@ import ar.com.cocos.challenge.application.inbound.GetPortfolioUseCase;
 import ar.com.cocos.challenge.application.inbound.GetUserOrderByIdUseCase;
 import ar.com.cocos.challenge.application.inbound.GetUserOrdersUseCase;
 import ar.com.cocos.challenge.application.inbound.SearchInstrumentsUseCase;
+import ar.com.cocos.challenge.application.outbound.EventPublisherPort;
 import ar.com.cocos.challenge.application.outbound.IdempotencyRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.InstrumentRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.MarketDataRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.OrderRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.UserRepositoryPort;
-import ar.com.cocos.challenge.application.strategy.LimitOrderExecutionStrategy;
+import ar.com.cocos.challenge.application.strategy.CreateLimitOrderExecutionStrategy;
+import ar.com.cocos.challenge.application.strategy.ExecuteLimitOrderExecutionStrategy;
 import ar.com.cocos.challenge.application.strategy.MarketOrderExecutionStrategy;
 import ar.com.cocos.challenge.application.strategy.OrderExecutionStrategy;
 import ar.com.cocos.challenge.application.usecases.CancelOrderUseCaseImpl;
@@ -20,6 +22,7 @@ import ar.com.cocos.challenge.application.usecases.GetPortfolioUseCaseImpl;
 import ar.com.cocos.challenge.application.usecases.GetUserOrderByIdUseCaseImpl;
 import ar.com.cocos.challenge.application.usecases.GetUserOrdersUseCaseImpl;
 import ar.com.cocos.challenge.application.usecases.SearchInstrumentsUseCaseImpl;
+import ar.com.cocos.challenge.domain.model.ActionOrder;
 import ar.com.cocos.challenge.domain.model.OrderType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -61,10 +64,11 @@ public class InboundBeansConfig {
 
     @Bean
     public CreateOrderUseCase createOrderUseCase(MarketOrderExecutionStrategy marketStrategy,
-                                                 LimitOrderExecutionStrategy limitStrategy,
+                                                 CreateLimitOrderExecutionStrategy limitStrategy,
                                                  OrderRepositoryPort orderRepositoryPort,
                                                  IdempotencyRepositoryPort idempotencyRepositoryPort,
-                                                 ObjectMapper objectMapper
+                                                 ObjectMapper objectMapper,
+                                                 EventPublisherPort eventPublisherPort
     ) {
 
         Map<OrderType, OrderExecutionStrategy> strategyByType = Map.of(
@@ -76,7 +80,8 @@ public class InboundBeansConfig {
                 strategyByType,
                 orderRepositoryPort,
                 idempotencyRepositoryPort,
-                objectMapper
+                objectMapper,
+                eventPublisherPort
         );
     }
 
@@ -111,11 +116,19 @@ public class InboundBeansConfig {
     }
 
     @Bean
-    public LimitOrderExecutionStrategy limitOrderExecutionStrategy(
+    public CreateLimitOrderExecutionStrategy limitOrderExecutionStrategy(
             OrderRepositoryPort orderRepository,
             MarketDataRepositoryPort marketDataRepositoryPort
     ) {
-        return new LimitOrderExecutionStrategy(orderRepository, marketDataRepositoryPort);
+        return new CreateLimitOrderExecutionStrategy(orderRepository, marketDataRepositoryPort);
+    }
+
+    @Bean
+    public ExecuteLimitOrderExecutionStrategy executeLimitOrderExecutionStrategy(
+            OrderRepositoryPort orderRepository,
+            MarketDataRepositoryPort marketDataRepositoryPort
+    ) {
+        return new ExecuteLimitOrderExecutionStrategy(orderRepository, marketDataRepositoryPort);
     }
 
 

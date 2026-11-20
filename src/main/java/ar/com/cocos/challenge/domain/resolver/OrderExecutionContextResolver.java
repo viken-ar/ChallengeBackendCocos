@@ -7,6 +7,7 @@ import ar.com.cocos.challenge.domain.model.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Resuelve el contexto de ejecución: precio efectivo, saldo disponible y tenencia previa.
@@ -16,7 +17,7 @@ public class OrderExecutionContextResolver {
 
     private OrderExecutionContextResolver() {}
 
-    public static OrderContext resolve(Order order, List<Order> filledOrders, MarketData lastMarketDate) {
+    public static OrderContext resolve(Order order, List<Order> filledOrders, Optional<MarketData> lastMarketDate) {
         BigDecimal availableCash = PortfolioCalculator.availableCash(filledOrders);
         int availableShares = PortfolioCalculator.netShares(filledOrders, order.getInstrumentId());
 
@@ -42,16 +43,16 @@ public class OrderExecutionContextResolver {
         return new OrderContext(effectivePrice, availableCash, availableShares);
     }
 
-    private static BigDecimal resolvePrice(Order order, MarketData lastMarketDate) {
+    private static BigDecimal resolvePrice(Order order, Optional<MarketData> lastMarketDate) {
         if (isCashMovement(order)) {
             return BigDecimal.ONE;
         }
 
         if (order.getType() == OrderType.MARKET) {
-            if (lastMarketDate == null || lastMarketDate.close() == null) {
+            if (lastMarketDate.isEmpty() || lastMarketDate.get().close() == null) {
                 throw new BadDataException("No hay cotización para el instrumento " + order.getInstrumentId());
             }
-            return lastMarketDate.close();
+            return lastMarketDate.get().close();
         }
 
         BigDecimal price = order.getPrice();

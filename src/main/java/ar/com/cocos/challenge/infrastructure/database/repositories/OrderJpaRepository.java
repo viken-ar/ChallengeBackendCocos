@@ -1,6 +1,7 @@
 package ar.com.cocos.challenge.infrastructure.database.repositories;
 
 import ar.com.cocos.challenge.domain.model.OrderStatus;
+import ar.com.cocos.challenge.domain.model.OrderType;
 import ar.com.cocos.challenge.infrastructure.database.entities.OrderEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,5 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Integer>,
     List<OrderEntity> findByUserIdAndStatus(Integer userId, OrderStatus status);
     List<OrderEntity> findByUserIdAndInstrumentIdAndStatus(Integer userId, Integer instrumentId, OrderStatus status);
     List<OrderEntity> findByUserIdAndInstrument_IdAndStatus(Integer userId, Integer instrumentId, OrderStatus status);
+    List<OrderEntity> findByTypeAndStatus(OrderType type, OrderStatus status);
 }

@@ -1,5 +1,6 @@
 package ar.com.cocos.challenge.config;
 
+import ar.com.cocos.challenge.application.outbound.EventPublisherPort;
 import ar.com.cocos.challenge.application.outbound.IdempotencyRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.InstrumentRepositoryPort;
 import ar.com.cocos.challenge.application.outbound.MarketDataRepositoryPort;
@@ -10,6 +11,8 @@ import ar.com.cocos.challenge.infrastructure.database.adapter.InstrumentReposito
 import ar.com.cocos.challenge.infrastructure.database.adapter.MarketDataRepositoryAdapter;
 import ar.com.cocos.challenge.infrastructure.database.adapter.OrderRepositoryAdapter;
 import ar.com.cocos.challenge.infrastructure.database.adapter.UserRepositoryAdapter;
+import ar.com.cocos.challenge.infrastructure.event.adapter.SpringEventPublisherAdapter;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -45,5 +48,11 @@ public class OutboundBeansConfig {
     @Primary
     public IdempotencyRepositoryPort idempotencyRepositoryPort(IdempotencyRepositoryAdapter adapter) {
         return adapter;
+    }
+
+    @Bean
+    @Primary
+    public EventPublisherPort eventPublisherPort(ApplicationEventPublisher applicationEventPublisher) {
+        return new SpringEventPublisherAdapter(applicationEventPublisher);
     }
 }
